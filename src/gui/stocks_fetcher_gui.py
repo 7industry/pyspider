@@ -12,6 +12,7 @@ from src.headless.kabumap import Kabumap
 from src.headless.kabuyoho import Kabuyoho
 from src.headless.minkabu import Minkabu
 from src.headless.nikkei import Nikkei
+from src.headless.price_change_ranking import Kabuka
 from src.headless.yahoo import Yahoo
 
 class FetcherGui():
@@ -60,10 +61,12 @@ class FetcherGui():
     file_label.insert('0', os.path.expanduser('~') + "/market.db")
     Button(input_frame, text="浏览", command=self.select_data_file).grid(row=1, column=2, sticky=W)
     
-    Label(input_frame, text="未使用：").grid(row=2, column=0, sticky=W)
+    Label(input_frame, text="ランキング：").grid(row=2, column=0, sticky=W)
     kikubon = Entry(input_frame, width=50, textvariable=self.save_name)
-    kikubon.insert('0', 'kikubon')
+    kikubon.insert('0', 'https://www.kabuka.jp.net/neagari-nesagari.html')
+    kikubon.config(state='readonly')
     kikubon.grid(row=2, column=1, columnspan=2, sticky=W)
+    Button(input_frame, text="ランキング下载", command=self.ranking_down).grid(row=2, column=2, sticky=W)
     
     Label(input_frame, text="Cookie：").grid(row=3, column=0, sticky=W)
     # wrap属性是指 自动换行。WORD表示单词换行；CHAR(default)表示字符换行;NONE 表示不自动换行
@@ -87,6 +90,12 @@ class FetcherGui():
     self.db_file_path.set(filename)
   
   # 开始下载
+  def ranking_down(self):
+    Kabuka.update_company_profile()
+
+
+
+  # 开始下载
   def download(self):
     self.cookie = self.cookie_text.get("1.0", END)
     db_path = self.db_file_path.get()
@@ -101,7 +110,6 @@ class FetcherGui():
     Minkabu.update_company_profile(symbol)
     Yahoo.update_company_profile(symbol)
     print(f"symbol：{symbol} end!")
-
     
 def gui_start():
   init_window = Tk()
