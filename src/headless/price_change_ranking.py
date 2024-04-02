@@ -75,3 +75,6 @@ class Kabuka:
       traceback.print_exc()
     finally:
       pass
+
+if __name__ == '__main__':
+    Kabuka.update_company_profile()

@@ -3,6 +3,7 @@
 
 from peewee import SqliteDatabase, Model, CharField, IntegerField, DateField, BooleanField, CompositeKey, \
   PrimaryKeyField, DecimalField
+from decimal import Decimal
 
 from src.config.env import db
 
@@ -53,13 +54,26 @@ class CompanyProfile(Model):
   book_value_per_share     = CharField()  # 1株純資産
   year_high                = CharField()  # 年高値
   year_low                 = CharField()  # 年安値
-  year_change              = CharField()  # 年初来株価上昇率
+  year_change              = DecimalField(max_digits=10, decimal_places=2)  # 年初来株価上昇率
   moving_average_deviation = CharField()  # 200日移動平均乖離率
   grade_rating             = CharField()  # レーティング 「评级」「等级」
   credit_multiplier        = CharField()  # 信用倍率(倍)
   ex_dividend_date         = CharField()  # 除息日
   business_scope           = CharField()  # 事業内容
   product_range            = CharField()  # 取扱い商品
+
+  # 在数据保存前执行的操作
+  def save(self, *args, **kwargs):
+    # 将 value 转换为 Decimal 类型
+    if self.year_change:
+      self.year_change = self.year_change.strip("%")
+      self.year_change = self.year_change.strip("N/A")
+      self.year_change = Decimal(self.year_change)
+    # # 验证数据
+    # if not self.name:
+    #   raise ValueError("名称不能为空")
+    super().save(*args, **kwargs)
+
 
 
   # 指定反序列化时要使用的字段　属性名が不一致に対応
