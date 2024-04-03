@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from datetime import date
 
 from peewee import SqliteDatabase, Model, CharField, IntegerField, DateField, BooleanField, CompositeKey, \
   PrimaryKeyField, DecimalField
@@ -54,21 +55,27 @@ class CompanyProfile(Model):
   book_value_per_share     = CharField()  # 1株純資産
   year_high                = CharField()  # 年高値
   year_low                 = CharField()  # 年安値
-  year_change              = DecimalField(max_digits=10, decimal_places=2)  # 年初来株価上昇率
+  year_change_ratio        = DecimalField(max_digits=10, decimal_places=2)  # 年初来株価上昇率
   moving_average_deviation = CharField()  # 200日移動平均乖離率
   grade_rating             = CharField()  # レーティング 「评级」「等级」
   credit_multiplier        = CharField()  # 信用倍率(倍)
   ex_dividend_date         = CharField()  # 除息日
   business_scope           = CharField()  # 事業内容
   product_range            = CharField()  # 取扱い商品
+  update_date              = CharField()  # 更新日
 
   # 在数据保存前执行的操作
   def save(self, *args, **kwargs):
+    # 替换 N/A 为空
+    for field in self.__data__:
+      if getattr(self, field) in ("N/A", "--", "---", "---倍"):
+        setattr(self, field, None)
+    # 将日期转换为字符串
+    self.update_date = date.today().strftime('%Y%m%d')
     # 将 value 转换为 Decimal 类型
-    if self.year_change:
-      self.year_change = self.year_change.strip("%")
-      self.year_change = self.year_change.strip("N/A")
-      self.year_change = Decimal(self.year_change)
+    if self.year_change_ratio:
+      self.year_change_ratio = self.year_change_ratio.replace(',', '').strip("%")
+      self.year_change_ratio = Decimal(self.year_change_ratio) if len(self.year_change_ratio) > 0 else None
     # # 验证数据
     # if not self.name:
     #   raise ValueError("名称不能为空")

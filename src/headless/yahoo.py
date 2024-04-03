@@ -30,7 +30,7 @@ class Yahoo:
       'Diluted EPS': 'eps',
       '52 Week Low': 'year_low',
       '52 Week High': 'year_high',
-      '52-Week Change': 'year_change',
+      '52-Week Change': 'year_change_ratio',
       'Forward Annual Dividend Yield': 'dividend_yield',
       'Ex-Dividend Date': 'ex_dividend_date',
       'Book Value Per Share': 'book_value_per_share',
@@ -61,7 +61,7 @@ class Yahoo:
           key = mapping[key]
           setattr(row, key, value)
 
-      database.update(row, fields=['enterprise_value', 'ex_dividend_date', 'year_low', 'year_high', 'year_change', 'pbr', 'per', 'roa', 'roe', 'eps', 'dividend_yield', 'book_value_per_share', 'debt_equity_ratio'])
+      database.update(row, fields=['enterprise_value', 'ex_dividend_date', 'year_low', 'year_high', 'year_change_ratio', 'pbr', 'per', 'roa', 'roe', 'eps', 'dividend_yield', 'book_value_per_share', 'debt_equity_ratio', 'update_date'])
 
     browser.close()
 

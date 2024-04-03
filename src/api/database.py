@@ -67,7 +67,8 @@ def update(model_class, json_dcit, fields=None):
   finally:
     pass
 
-def update(entity,fields=None):
+
+def update(entity, fields=None):
   try:
     # save()方法会检查模型实例是否存在主键。如果存在，则执行UPDATE操作更新现有行
     #   only 参数用于指定要更新的字段 model.save(only=['name', 'age'])
@@ -79,6 +80,7 @@ def update(entity,fields=None):
     return True
   finally:
     pass
+
 
 # 批量插入或更新数据
 # ListingStatus.get_by_id((symbol == symbol) & (exchange == exchange))
@@ -120,10 +122,26 @@ def save_many(*entities):
     pass
 
 
-
-def delete(model_class, json_dcit):
+# 根据主键删除
+def delete(model_class, id):
   try:
-    model_class.create(**json_dcit)
+    # model_class.delete().where(**json_dcit)
+    model_class.delete().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
+  except:
+    print("database delete except:")
+    traceback.print_exc()
+  else:
+    return True
+  finally:
+    pass
+
+
+# 查询数据 TODO
+# ListingStatus.get_by_id((symbol == symbol) & (exchange == exchange))
+def find(model_class, json_dcit):
+  try:
+    entity = model_class.select().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
+    # entity = model_class.select().where(CompanyProfile.symbol == id).execute()
   except:
     print("database update except:")
     traceback.print_exc()
@@ -131,7 +149,6 @@ def delete(model_class, json_dcit):
     return True
   finally:
     pass
-
 
 if __name__ == '__main__':
   from peewee import SqliteDatabase, Model, CharField, DateField, BooleanField, ForeignKeyField, IntegrityError
