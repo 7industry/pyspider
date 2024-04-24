@@ -77,7 +77,7 @@ class MarketService:
 
     Kabumap.update_company_profile(symbol)
     Nikkei.update_company_profile(symbol)
-    Kabuyoho.update_company_profile(symbol)  # TODO 收录不全
+    Kabuyoho.update_company_profile(symbol)
     Minkabu.update_company_profile(symbol)
     Yahoo.update_company_profile(symbol)
     print(f"symbol：{symbol} end!")

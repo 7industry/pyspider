@@ -55,17 +55,22 @@ class Kabuyoho:
 
       # elements = [element.text for element in browser.page.select('section[class="info_box info_box_contents"]')]
       elements = browser.page.select('section[class="info_box info_box_contents"], section[class="info_box info_box_product"]')
-      # 事業内容
-      business_titel = elements[0].select('h2')[0].text.strip()
-      business_scope = "\n".join(p.text.strip() for p in elements[0].select("section > p"))
-      setattr(row,  mapping[business_titel], business_scope)
 
-      # 取扱い商品
-      product_titel = elements[1].select('h2')[0].text.strip()
-      product_range = "\n".join(p.text.strip() for p in elements[1].select("section > p"))
-      setattr(row, mapping[product_titel], product_range)
+      if len(elements) > 0:
+        # 事業内容
+        business_titel = elements[0].select('h2')[0].text.strip()
+        business_scope = "\n".join(p.text.strip() for p in elements[0].select("section > p"))
+        setattr(row,  mapping[business_titel], business_scope)
 
-      database.update(row, fields=['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range'])
+        # 取扱い商品
+        product_titel = elements[1].select('h2')[0].text.strip()
+        product_range = "\n".join(p.text.strip() for p in elements[1].select("section > p"))
+        setattr(row, mapping[product_titel], product_range)
+
+        database.update(row, fields=['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range', 'dividend_yield'])
+      else:
+        print('ウェブサイト「株予報プロ」に、銘柄「{symbol}」は登録されていません'.format(symbol=row.symbol))
+
 
     browser.close()
 
