@@ -3,31 +3,18 @@
 
 # 目標株価まとめ  値上がり率 / 値下がり率ランキング  Price Increase / Price Decrease Ranking
 # https://www.kabuka.jp.net/neagari-nesagari.html
-
-
-import time
+import asyncio
 import random
 import re
-import traceback
 from mechanicalsoup import StatefulBrowser
 
 from src.config.env import useragents
 
-import asyncio
-
-from src.headless.kabumap import Kabumap
-from src.headless.kabuyoho import Kabuyoho
-from src.headless.minkabu import Minkabu
-from src.headless.nikkei import Nikkei
-from src.headless.yahoo import Yahoo
 
 class Kabuka:
 
   @classmethod
-  def update_company_profile(cls):
-
-    # 使用 time() 函数
-    start_time = time.time()
+  def update_ranking_profile(cls):
 
     url = 'https://www.kabuka.jp.net/neagari-nesagari.html'
     browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
@@ -52,29 +39,7 @@ class Kabuka:
 
         # 打印结果
         print(f"交易所：{exchange} 代码：{symbol} 名称：{name} 涨幅：{change} 百分比：{percentage}")
-        # 运行事件循环
-        asyncio.run(cls.update_profile(symbol))
 
-    # 计算耗时
-    end_time = time.time()
-    elapsed_time = end_time - start_time
+        from src.service.market_service import MarketService
+        asyncio.run(MarketService.download(symbol))
 
-    print("耗时:", elapsed_time, "秒")
-
-
-  async def update_profile(symbol):
-    try:
-      await asyncio.sleep(2)
-      Kabumap.update_company_profile(symbol)
-      Nikkei.update_company_profile(symbol)
-      Kabuyoho.update_company_profile(symbol)
-      Minkabu.update_company_profile(symbol)
-      Yahoo.update_company_profile(symbol)
-      # await asyncio.gather()
-    except:
-      traceback.print_exc()
-    finally:
-      pass
-
-if __name__ == '__main__':
-    Kabuka.update_company_profile()

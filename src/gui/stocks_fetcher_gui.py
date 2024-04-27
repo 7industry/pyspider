@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 import sys
 import os
 from tkinter import StringVar, LabelFrame, Label, Entry, Button, Text, Tk
@@ -8,12 +9,6 @@ from tkinter.constants import W, NONE, END
 import tkinter.filedialog
 import tkinter.messagebox
 
-from src.headless.kabumap import Kabumap
-from src.headless.kabuyoho import Kabuyoho
-from src.headless.minkabu import Minkabu
-from src.headless.nikkei import Nikkei
-from src.headless.price_change_ranking import Kabuka
-from src.headless.yahoo import Yahoo
 from src.service.market_service import MarketService
 
 
@@ -57,7 +52,7 @@ class FetcherGui():
     symbol_label = Entry(input_frame, width=50, textvariable=self.symbol)
     symbol_label.insert('0', '4755')
     symbol_label.grid(row=0, column=1, columnspan=3, sticky=W)
-    Button(input_frame, text="单个下载", command=self.download).grid(row=0, column=2, sticky=W)
+    Button(input_frame, text="单个下载", command=self.single_download).grid(row=0, column=2, sticky=W)
     Button(input_frame, text="随机下载", command=self.random_down).grid(row=0, column=3, sticky=W)
 
     Label(input_frame, text="ランキング：").grid(row=1, column=0, sticky=W)
@@ -83,7 +78,7 @@ class FetcherGui():
     action_frame = LabelFrame()
     action_frame.grid(row=1, column=0, padx=0, pady=0)
     
-    Button(action_frame, text="开始下载", command=self.download).grid(row=0, column=0)
+    Button(action_frame, text="开始下载", command=self.batch_download).grid(row=0, column=0)
     
     self.text = Text(action_frame, width=100, height=40, wrap=NONE)
     self.text.grid(row=1, column=0, sticky=W)
@@ -97,27 +92,27 @@ class FetcherGui():
   
   # 开始下载
   def ranking_down(self):
-    Kabuka.update_company_profile()
+    MarketService.ranking_down()
 
   # 下载200
   def random_down(self):
     MarketService.random_down()
 
   # 开始下载
-  def download(self):
+  def single_download(self):
     self.cookie = self.cookie_text.get("1.0", END)
     db_path = self.db_file_path.get()
     file_name = self.save_name.get()
-
     symbol = self.symbol.get().strip()
-    print(f"symbol：{symbol} start...")
 
-    Kabumap.update_company_profile(symbol)
-    Nikkei.update_company_profile(symbol)
-    Kabuyoho.update_company_profile(symbol)
-    Minkabu.update_company_profile(symbol)
-    Yahoo.update_company_profile(symbol)
+    print(f"symbol：{symbol} start...")
+    asyncio.run(MarketService.download(symbol))
     print(f"symbol：{symbol} end!")
+
+  # 开始下载
+  def batch_download(self):
+    MarketService.batch_down()
+
     
 def gui_start():
   init_window = Tk()

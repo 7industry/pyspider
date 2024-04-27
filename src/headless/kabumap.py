@@ -6,11 +6,25 @@ import time
 import random
 from mechanicalsoup import StatefulBrowser
 from src.config.env import useragents
+from src.headless.dataintegrator import DataIntegrator
 from src.model.FundamentalData import CompanyProfile
 from src.api import database
 
 
-class Kabumap:
+class Kabumap(DataIntegrator):
+
+  _fields = ['credit_multiplier']
+
+  __mapping = {
+    '時価総額': 'market_cap',
+    '配当利回り': 'dividend_yield',
+    'PBR': 'pbr',
+    'PER': 'per',
+    '出来高': 'volume',
+    '年初来高値': 'year_high',
+    '年初来安値': 'year_low',
+    '信用倍率': 'credit_multiplier',
+  }
 
   @classmethod
   def update_company_profile(cls, *symbol):
@@ -59,3 +73,42 @@ class Kabumap:
 
     print("耗时:", elapsed_time, "秒")
 
+
+  def get_company_profile(self):
+    # 使用 time() 函数
+    start_time = time.time()
+
+    row = CompanyProfile()
+    row.symbol = self.symbol
+
+    # 企業情報
+    # https://dt.kabumap.com/servlets/dt/Action?SRC=basic/base&codetext=7003
+    url = 'https://dt.kabumap.com/servlets/dt/Action?SRC=basic/base&codetext={symbol}'
+
+    browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
+    # 使用 format() 方法替换字符串
+    print(url.format(symbol=row.symbol))
+    browser.open(url.format(symbol=row.symbol))
+    browser.close()
+
+    elements = [element.text for element in browser.page.select('div:is(.upperArea, .lowerArea) dl > :is(dt,dd)')]
+
+    if len(elements) > 0:
+      for i in range(0, len(elements), 2):
+        key, value = elements[i], elements[i + 1]
+        # 剔除掉 () 之间的内容
+        key = re.sub(r"\(.*?\)", "", key)
+
+        if key in self.__mapping.keys():
+          key = self.__mapping[key]
+          setattr(row, key, value)
+    else:
+      print('ウェブサイト「株マップ」に、銘柄「{symbol}」は登録されていません'.format(symbol=row.symbol))
+
+    # 计算耗时
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    print("耗时:", elapsed_time, "秒")
+    # database.update(row, fields=['credit_multiplier'])
+    return row

@@ -4,7 +4,7 @@
 import traceback
 
 from src.config.env import db
-from peewee import DoesNotExist
+from peewee import DoesNotExist, fn
 
 
 # 插入单条数据
@@ -136,7 +136,34 @@ def delete(model_class, id):
     pass
 
 
-# 查询数据 TODO
+# 根据主键查詢
+# row = CompanyProfile.get(symbol)
+#  useage :   database.get(CompanyProfile, symbol)
+def get(model_class, pid):
+  try:
+    entity = model_class.get(pid)
+    return entity
+  except:
+    traceback.print_exc()
+    raise ValueError("database get except:")
+  finally:
+    pass
+
+# 隨機取表中的數據
+#  CompanyProfile.select().order_by(CompanyProfile.update_date.asc(), peewee.fn.random()).limit(200)
+# CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc(), CompanyProfile.symbol.desc()).limit(200)
+def get_random(model_class, limit_count=200):
+  try:
+    # model_class.select().order_by(model_class.update_date.asc(), fn.random()).limit(limit_count)
+    return model_class.select().order_by(fn.random()).limit(limit_count)
+  except:
+    traceback.print_exc()
+    raise ValueError("database get except:")
+  finally:
+    pass
+
+
+# 查询数据  TODO
 # ListingStatus.get_by_id((symbol == symbol) & (exchange == exchange))
 def find(model_class, json_dcit):
   try:
