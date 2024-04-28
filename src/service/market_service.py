@@ -37,7 +37,7 @@ class MarketService:
       try:
         # 遍历查询结果
         for symbol in symbols:
-          # await asyncio.sleep(1)
+          await asyncio.sleep(2)
 
           baseData = Kabumap(symbol=symbol).update()
           baseData = Nikkei(baseData).update()
