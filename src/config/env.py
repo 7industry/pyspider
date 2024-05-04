@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from peewee import SqliteDatabase
-
-db = SqliteDatabase('E:/Documents/market.db')
 
 # , pragmas={
 # 'journal_mode': 'wal',
@@ -13,6 +10,7 @@ db = SqliteDatabase('E:/Documents/market.db')
 # 'synchronous': 0}
 
 #模擬header的user-agent
+
 useragents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0',
@@ -27,3 +25,26 @@ headers = {
   'Content-Type': 'text/html; charset=utf-8',
   'Connection': 'close'
 }
+
+from peewee import SqliteDatabase
+
+# Define db as a placeholder
+# db = None
+db = SqliteDatabase('L:/SQLite/market.db')
+
+
+# Dynamically change the database connection
+def connect_to_database(db_path):
+    global db  # Declare 'db' as a global variable
+    db = SqliteDatabase(db_path)
+    # Use the database object 'db' for your database operations
+
+    from src.model.FundamentalData import CompanyProfile
+    # Assume 'new_db' is a new SqliteDatabase object
+    CompanyProfile._meta.database = db
+
+
+if __name__ == "__main__":
+    # Example usage
+    db_path = "L:/SQLite/market.db"  # Replace with the desired path
+    db = connect_to_database(db_path)
