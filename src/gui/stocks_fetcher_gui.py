@@ -9,6 +9,7 @@ from tkinter.constants import W, NONE, END
 import tkinter.filedialog
 import tkinter.messagebox
 
+from src.config.env import connect_to_database
 from src.service.market_service import MarketService
 
 
@@ -89,7 +90,8 @@ class FetcherGui():
     filename = tkinter.filedialog.askopenfilename()
     # fodername = tkinter.filedialog.askdirectory()
     self.db_file_path.set(filename)
-  
+    connect_to_database(filename)
+
   # 开始下载
   def ranking_down(self):
     MarketService.ranking_down()
