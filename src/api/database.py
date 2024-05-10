@@ -12,6 +12,7 @@ from peewee import DoesNotExist, fn
 # model.save(force_insert=True)
 def save(modle):
   try:
+    db.connect(True)
     modle.save(force_insert=True)
   except:
     # traceback.print_exc()
@@ -19,12 +20,14 @@ def save(modle):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
 # 批量插入数据
 def insert_many(*entities):
   try:
+    db.connect(True)
     with db.transaction():
       # 插入数据
       for entity in entities:
@@ -37,6 +40,7 @@ def insert_many(*entities):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
@@ -44,6 +48,7 @@ def insert_many(*entities):
 # grandma = Person.create(name='Grandma', birthday=date(1935, 3, 1), is_relative=True)
 def insert(model_class, **json_dcit):
   try:
+    db.connect(True)
     model_class.create(**json_dcit)
   except:
     # traceback.print_exc()
@@ -51,11 +56,13 @@ def insert(model_class, **json_dcit):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
 def update(model_class, json_dcit, fields=None):
   try:
+    db.connect(True)
     # save()方法会检查模型实例是否存在主键。如果存在，则执行UPDATE操作更新现有行
     #   only 参数用于指定要更新的字段 model.save(only=['name', 'age'])
     model_class(**json_dcit).save(only=fields)
@@ -65,11 +72,13 @@ def update(model_class, json_dcit, fields=None):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
 def update(entity, fields=None):
   try:
+    db.connect(True)
     # save()方法会检查模型实例是否存在主键。如果存在，则执行UPDATE操作更新现有行
     #   only 参数用于指定要更新的字段 model.save(only=['name', 'age'])
     entity.save(only=fields)
@@ -79,6 +88,7 @@ def update(entity, fields=None):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
@@ -86,6 +96,7 @@ def update(entity, fields=None):
 # ListingStatus.get_by_id((symbol == symbol) & (exchange == exchange))
 def save_many(*entities):
   try:
+    db.connect(True)
     with db.transaction():
       for entity in entities:
 
@@ -119,12 +130,14 @@ def save_many(*entities):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
 # 根据主键删除
 def delete(model_class, id):
   try:
+    db.connect(True)
     # model_class.delete().where(**json_dcit)
     model_class.delete().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
   except:
@@ -133,6 +146,7 @@ def delete(model_class, id):
   else:
     return True
   finally:
+    db.close()
     pass
 
 
@@ -141,12 +155,14 @@ def delete(model_class, id):
 #  useage :   database.get(CompanyProfile, symbol)
 def get(model_class, pid):
   try:
+    db.connect(True)
     entity = model_class.get(pid)
     return entity
   except:
     traceback.print_exc()
     raise ValueError("database get except:")
   finally:
+    db.close()
     pass
 
 # 隨機取表中的數據
@@ -154,12 +170,14 @@ def get(model_class, pid):
 # CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc(), CompanyProfile.symbol.desc()).limit(200)
 def get_random(model_class, limit_count=200):
   try:
+    db.connect(True)
     # model_class.select().order_by(model_class.update_date.asc(), fn.random()).limit(limit_count)
-    return model_class.select().order_by(fn.random()).limit(limit_count)
+    return [item for item in model_class.select().order_by(fn.random()).limit(limit_count)]
   except:
     traceback.print_exc()
     raise ValueError("database get except:")
   finally:
+    db.close()
     pass
 
 
@@ -167,6 +185,7 @@ def get_random(model_class, limit_count=200):
 # ListingStatus.get_by_id((symbol == symbol) & (exchange == exchange))
 def find(model_class, json_dcit):
   try:
+    db.connect(True)
     entity = model_class.select().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
     # entity = model_class.select().where(CompanyProfile.symbol == id).execute()
   except:
@@ -175,6 +194,7 @@ def find(model_class, json_dcit):
   else:
     return True
   finally:
+    db.close()
     pass
 
 if __name__ == '__main__':

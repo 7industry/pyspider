@@ -8,7 +8,7 @@ import random
 import re
 from mechanicalsoup import StatefulBrowser
 
-from src.config.env import useragents
+from src.config.env import useragents, timeout
 
 
 class Kabuka:
@@ -18,7 +18,7 @@ class Kabuka:
 
     url = 'https://www.kabuka.jp.net/neagari-nesagari.html'
     browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
-    browser.open(url)
+    browser.open(url, timeout=timeout)
     browser.close()
 
     # 查找 ID 为 readmoretable 的 div

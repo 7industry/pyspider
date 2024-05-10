@@ -100,7 +100,7 @@ class MarketService:
       # profiles = CompanyProfile.select().where(CompanyProfile.update_date == None).order_by(CompanyProfile.update_date.asc())
 
       # 查询前 200 条记录
-      profiles = CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc()).limit(200)
+      profiles = [item for item in CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc()).limit(200)]
 
       # 遍历查询结果
       for profile in profiles:

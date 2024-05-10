@@ -26,6 +26,9 @@ headers = {
   'Connection': 'close'
 }
 
+# 配置超時時間(秒)
+timeout = 15
+
 from peewee import SqliteDatabase
 
 # Define db as a placeholder

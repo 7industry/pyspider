@@ -5,7 +5,7 @@ import re
 import time
 import random
 from mechanicalsoup import StatefulBrowser
-from src.config.env import useragents
+from src.config.env import useragents, timeout
 from src.headless.dataintegrator import DataIntegrator
 from src.model.FundamentalData import CompanyProfile
 from src.api import database
@@ -50,7 +50,7 @@ class Kabumap(DataIntegrator):
     for row in CompanyProfile.select(CompanyProfile.symbol).where(CompanyProfile.symbol.in_(symbol)):
       # 使用 format() 方法替换字符串
       print(url.format(symbol=row.symbol))
-      browser.open(url.format(symbol=row.symbol))
+      browser.open(url.format(symbol=row.symbol), timeout=timeout)
 
       elements = [element.text for element in browser.page.select('div:is(.upperArea, .lowerArea) dl > :is(dt,dd)')]
 
@@ -88,7 +88,7 @@ class Kabumap(DataIntegrator):
     browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
     # 使用 format() 方法替换字符串
     print(url.format(symbol=row.symbol))
-    browser.open(url.format(symbol=row.symbol))
+    browser.open(url.format(symbol=row.symbol), timeout=timeout)
     browser.close()
 
     elements = [element.text for element in browser.page.select('div:is(.upperArea, .lowerArea) dl > :is(dt,dd)')]

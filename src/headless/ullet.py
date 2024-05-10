@@ -20,7 +20,7 @@ import re
 from mechanicalsoup import StatefulBrowser
 
 from src.api import database
-from src.config.env import useragents
+from src.config.env import useragents, timeout
 
 # Set Cookie Jar so we can stay logged in...
 # br.set_cookiejar(cookie_jar)
@@ -112,12 +112,12 @@ for i in range(total_pages):
   disp_url = 'https://www.ullet.com/search/disp/1/page/{}.html?without_layout'
 
   print(brief_url.format(i))
-  browser.open(brief_url.format(i))
+  browser.open(brief_url.format(i), timeout=timeout)
   # 查找 ID 为 list 开头的  <tr id="list7203" class="even first">
   brief_elements = browser.page.select('table > tr[id^="list"]')
 
   print(disp_url.format(i))
-  browser.open(disp_url.format(i))
+  browser.open(disp_url.format(i), timeout=timeout)
   disp_elements = browser.page.select('table > tr[id^="list"]')
 
   save_data(brief_elements,disp_elements)
