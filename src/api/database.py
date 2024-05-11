@@ -16,7 +16,7 @@ def save(modle):
     modle.save(force_insert=True)
   except:
     # traceback.print_exc()
-    raise ValueError("database insert except:")
+    raise UserWarning("database insert failed!")
   else:
     return True
   finally:
@@ -36,7 +36,7 @@ def insert_many(*entities):
   except:
     db.rollback()
     # traceback.print_exc()
-    raise ValueError("database insert except:")
+    raise UserWarning("database insert failed!")
   else:
     return True
   finally:
@@ -52,7 +52,7 @@ def insert(model_class, **json_dcit):
     model_class.create(**json_dcit)
   except:
     # traceback.print_exc()
-    raise ValueError("database insert except:")
+    raise UserWarning("database insert failed!")
   else:
     return True
   finally:
@@ -67,8 +67,8 @@ def update(model_class, json_dcit, fields=None):
     #   only 参数用于指定要更新的字段 model.save(only=['name', 'age'])
     model_class(**json_dcit).save(only=fields)
   except:
-    print("database update except:")
-    traceback.print_exc()
+    # traceback.print_exc()
+    raise UserWarning("database update failed!")
   else:
     return True
   finally:
@@ -83,8 +83,8 @@ def update(entity, fields=None):
     #   only 参数用于指定要更新的字段 model.save(only=['name', 'age'])
     entity.save(only=fields)
   except:
-    print("database update except:")
-    traceback.print_exc()
+    # traceback.print_exc()
+    raise UserWarning("database update failed!")
   else:
     return True
   finally:
@@ -126,7 +126,7 @@ def save_many(*entities):
   except:
     db.rollback()
     # traceback.print_exc()
-    raise ValueError("database insert except:")
+    raise UserWarning("database insert failed!")
   else:
     return True
   finally:
@@ -141,8 +141,8 @@ def delete(model_class, id):
     # model_class.delete().where(**json_dcit)
     model_class.delete().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
   except:
-    print("database delete except:")
-    traceback.print_exc()
+    # traceback.print_exc()
+    raise UserWarning("database delete failed!")
   else:
     return True
   finally:
@@ -159,8 +159,8 @@ def get(model_class, pid):
     entity = model_class.get(pid)
     return entity
   except:
-    traceback.print_exc()
-    raise ValueError("database get except:")
+    # traceback.print_exc()
+    raise UserWarning("database get failed!")
   finally:
     db.close()
     pass
@@ -174,8 +174,8 @@ def get_random(model_class, limit_count=200):
     # model_class.select().order_by(model_class.update_date.asc(), fn.random()).limit(limit_count)
     return [item for item in model_class.select().order_by(fn.random()).limit(limit_count)]
   except:
-    traceback.print_exc()
-    raise ValueError("database get except:")
+    # traceback.print_exc()
+    raise UserWarning("database get failed!")
   finally:
     db.close()
     pass
@@ -189,8 +189,8 @@ def find(model_class, json_dcit):
     entity = model_class.select().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
     # entity = model_class.select().where(CompanyProfile.symbol == id).execute()
   except:
-    print("database update except:")
-    traceback.print_exc()
+    # traceback.print_exc()
+    raise UserWarning("database find failed!")
   else:
     return True
   finally:

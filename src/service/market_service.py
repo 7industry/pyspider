@@ -50,6 +50,8 @@ class MarketService:
           # await asyncio.gather()
       except:
         traceback.print_exc()
+        # Signal the main program to terminate
+        asyncio.get_event_loop().stop()
         raise
       finally:
         pass
