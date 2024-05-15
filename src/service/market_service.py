@@ -8,8 +8,7 @@ __Author__ = 'chen'
 import asyncio
 import time
 import traceback
-
-import peewee
+import datetime
 
 from src.api import database
 
@@ -37,6 +36,15 @@ class MarketService:
       try:
         # 遍历查询结果
         for symbol in symbols:
+          # Format the current date to YYYYMMDD
+          current_date = datetime.date.today().strftime("%Y%m%d")
+
+          # check data
+          profile = CompanyProfile.select().where(CompanyProfile.symbol == symbol).first()
+          # profile = database.get(CompanyProfile, symbol) # TODO  ERROR
+          if profile and profile.update_date and profile.update_date >= current_date:
+              return
+
           await asyncio.sleep(2)
 
           baseData = Kabumap(symbol=symbol).update()
@@ -45,7 +53,11 @@ class MarketService:
           baseData = Minkabu(baseData).update()
           baseData = Yahoo(baseData).update()
 
-          baseData.save()
+          # 新規 OR 更新
+          if profile:
+            baseData.save()
+          else:
+            baseData.insert()
 
           # await asyncio.gather()
       except:

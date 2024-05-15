@@ -152,11 +152,12 @@ def delete(model_class, id):
 
 # 根据主键查詢
 # row = CompanyProfile.get(symbol)
+# CompanyProfile.get(CompanyProfile.symbol == symbol)
 #  useage :   database.get(CompanyProfile, symbol)
 def get(model_class, pid):
   try:
     db.connect(True)
-    entity = model_class.get(pid)
+    entity = model_class.get(pid)  # TODO  ERROR
     return entity
   except:
     # traceback.print_exc()

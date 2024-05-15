@@ -60,10 +60,13 @@ class DataIntegrator(ABC):
           setattr(self.__record, key, getattr(row, key))
     return self
 
-
+  # 更新
   def save(self) -> None:
     database.update(self.__record, fields=set(self.__columns))
 
+  # 新規
+  def insert(self) -> None:
+    database.save(self.__record)
 
 if __name__ == '__main__':
   from src.headless.kabumap import Kabumap
