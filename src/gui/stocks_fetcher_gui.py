@@ -9,8 +9,8 @@ from tkinter.constants import W, NONE, END
 import tkinter.filedialog
 import tkinter.messagebox
 
-from src.config.env import connect_to_database
-from src.service.market_service import MarketService
+from config.env import connect_to_database
+from service.market_service import MarketService
 
 
 class FetcherGui():

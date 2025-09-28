@@ -5,10 +5,10 @@ import re
 import time
 import random
 from mechanicalsoup import StatefulBrowser
-from src.config.env import useragents, timeout
-from src.headless.dataintegrator import DataIntegrator
-from src.model.FundamentalData import CompanyProfile
-from src.api import database
+from config.env import useragents, timeout
+from headless.dataintegrator import DataIntegrator
+from model.SchemaModel import EquityProfile
+from api import database
 
 
 class Minkabu(DataIntegrator):
@@ -25,7 +25,7 @@ class Minkabu(DataIntegrator):
   }
 
   @classmethod
-  def update_company_profile(cls, *symbol):
+  def update_equity_statistics(cls, *symbol):
     # 使用 time() 函数
     start_time = time.time()
     browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
@@ -43,7 +43,7 @@ class Minkabu(DataIntegrator):
     # https://minkabu.jp/stock/7003/fundamental
     url = 'https://minkabu.jp/stock/{symbol}/fundamental'
 
-    for row in CompanyProfile.select(CompanyProfile.symbol).where(CompanyProfile.symbol.in_(symbol)):
+    for row in EquityProfile.select(EquityProfile.symbol).where(EquityProfile.symbol.in_(symbol)):
       # 使用 format() 方法替换字符串
       print(url.format(symbol=row.symbol))
       browser.open(url.format(symbol=row.symbol), timeout=timeout)
@@ -71,11 +71,11 @@ class Minkabu(DataIntegrator):
     print("耗时:", elapsed_time, "秒")
 
 
-  def get_company_profile(self):
+  def get_equity_statistics(self):
     # 使用 time() 函数
     start_time = time.time()
 
-    row = CompanyProfile()
+    row = EquityProfile()
     row.symbol = self.symbol
 
     # 企業情報

@@ -33,7 +33,7 @@ from peewee import SqliteDatabase
 
 # Define db as a placeholder
 # db = None
-db = SqliteDatabase('L:/SQLite/market.db')
+db = SqliteDatabase('C:/Users/kindustry/Documents/market.db')
 
 
 # Dynamically change the database connection
@@ -42,9 +42,9 @@ def connect_to_database(db_path):
     db = SqliteDatabase(db_path)
     # Use the database object 'db' for your database operations
 
-    from src.model.FundamentalData import CompanyProfile
+    from model.SchemaModel import EquityProfile
     # Assume 'new_db' is a new SqliteDatabase object
-    CompanyProfile._meta.database = db
+    EquityProfile._meta.database = db
 
 
 if __name__ == "__main__":

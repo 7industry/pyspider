@@ -8,7 +8,7 @@ import random
 import re
 from mechanicalsoup import StatefulBrowser
 
-from src.config.env import useragents, timeout
+from config.env import useragents, timeout
 
 
 class Kabuka:
@@ -40,6 +40,6 @@ class Kabuka:
         # 打印结果
         print(f"交易所：{exchange} 代码：{symbol} 名称：{name} 涨幅：{change} 百分比：{percentage}")
 
-        from src.service.market_service import MarketService
+        from service.market_service import MarketService
         asyncio.run(MarketService.download(symbol))
 

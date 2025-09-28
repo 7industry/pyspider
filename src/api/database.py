@@ -3,7 +3,7 @@
 
 import traceback
 
-from src.config.env import db
+from config.env import db
 from peewee import DoesNotExist, fn
 
 
@@ -151,9 +151,9 @@ def delete(model_class, id):
 
 
 # 根据主键查詢
-# row = CompanyProfile.get(symbol)
-# CompanyProfile.get(CompanyProfile.symbol == symbol)
-#  useage :   database.get(CompanyProfile, symbol)
+# row = EquityProfile.get(symbol)
+# EquityProfile.get(EquityProfile.symbol == symbol)
+#  useage :   database.get(EquityProfile, symbol)
 def get(model_class, pid):
   try:
     db.connect(True)
@@ -167,8 +167,8 @@ def get(model_class, pid):
     pass
 
 # 隨機取表中的數據
-#  CompanyProfile.select().order_by(CompanyProfile.update_date.asc(), peewee.fn.random()).limit(200)
-# CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc(), CompanyProfile.symbol.desc()).limit(200)
+#  EquityProfile.select().order_by(EquityProfile.update_date.asc(), peewee.fn.random()).limit(200)
+# EquityProfile.select(EquityProfile.symbol, EquityProfile.name).order_by(EquityProfile.update_date.asc(), EquityProfile.symbol.desc()).limit(200)
 def get_random(model_class, limit_count=200):
   try:
     db.connect(True)
@@ -188,7 +188,7 @@ def find(model_class, json_dcit):
   try:
     db.connect(True)
     entity = model_class.select().where(getattr(model_class, model_class._meta.primary_key.field_names[0]) == id).execute()
-    # entity = model_class.select().where(CompanyProfile.symbol == id).execute()
+    # entity = model_class.select().where(EquityProfile.symbol == id).execute()
   except:
     # traceback.print_exc()
     raise UserWarning("database find failed!")

@@ -8,14 +8,14 @@ import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-from src.api import database
-from src.model.FundamentalData import CompanyProfile
+from api import database
+from model.SchemaModel import EquityProfile
 
 
 class Reuters:
 
   @classmethod
-  def update_company_profile(cls, *symbol):
+  def update_equity_statistics(cls, *symbol):
     # 使用 time() 函数
     start_time = time.time()
 
@@ -43,7 +43,7 @@ class Reuters:
       # https://www.reuters.com/markets/companies/5401.T
       url = 'https://www.reuters.com/markets/companies/{symbol}.T'
 
-      for row in CompanyProfile.select(CompanyProfile.symbol).where(CompanyProfile.symbol.in_(symbol)):
+      for row in EquityProfile.select(EquityProfile.symbol).where(EquityProfile.symbol.in_(symbol)):
         print(url.format(symbol=row.symbol))
         driver.get(url.format(symbol=row.symbol))
         # assert 'Yahoo' in browser.title
@@ -79,5 +79,5 @@ class Reuters:
 
 
 if __name__ == '__main__':
-  Reuters.update_company_profile('1301', '2130')
+  Reuters.update_equity_statistics('1301', '2130')
 

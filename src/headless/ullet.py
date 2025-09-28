@@ -19,13 +19,13 @@ import random
 import re
 from mechanicalsoup import StatefulBrowser
 
-from src.api import database
-from src.config.env import useragents, timeout
+from api import database
+from config.env import useragents, timeout
 
 # Set Cookie Jar so we can stay logged in...
 # br.set_cookiejar(cookie_jar)
-from src.model.FundamentalData import CompanyProfile
-from src.util.cvs_handler import CsvHandler
+from model.SchemaModel import EquityProfile
+from util.cvs_handler import CsvHandler
 
 
 def save_data(brief_elements, disp_elements):
@@ -85,7 +85,7 @@ def save_data(brief_elements, disp_elements):
 
     # 创建一个列表
     # data.append([symbol, number, name, sector, exchange, amount_of_sales, net_income, sales_cf, total_assets, cash_and_deposits, total_capital, average_annual_income])
-    entity = CompanyProfile(symbol=symbol, spotlight=spotlight, name=name, sector=sector
+    entity = EquityProfile(symbol=symbol, spotlight=spotlight, name=name, sector=sector
                             , exchange=exchange, amount_of_sales=amount_of_sales, net_income=net_income
                             , sales_cf=sales_cf, total_assets=total_assets, cash_and_deposits=cash_and_deposits
                             , total_capital=total_capital, average_annual_income=average_annual_income)

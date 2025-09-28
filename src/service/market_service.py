@@ -10,24 +10,24 @@ import time
 import traceback
 import datetime
 
-from src.api import database
+from api import database
 
-from src.headless.kabumap import Kabumap
-from src.headless.kabuyoho import Kabuyoho
-from src.headless.minkabu import Minkabu
-from src.headless.nikkei import Nikkei
-from src.headless.kabuka import Kabuka
-from src.headless.yahoo import Yahoo
-from src.model.FundamentalData import CompanyProfile
+from headless.kabumap import Kabumap
+from headless.kabuyoho import Kabuyoho
+from headless.minkabu import Minkabu
+from headless.nikkei import Nikkei
+from headless.kabuka import Kabuka
+from headless.yahoo import Yahoo
+from model.SchemaModel import EquityProfile
 
 class MarketService:
 
   # 单个删除
   @classmethod
   def delete_stock(cls, symbol):
-      database.delete(CompanyProfile, symbol)
+      database.delete(EquityProfile, symbol)
       # 根据主键删除 Person 实例
-      # CompanyProfile.delete().where(CompanyProfile.symbol == symbol).execute()
+      # EquityProfile.delete().where(EquityProfile.symbol == symbol).execute()
 
 
   # 开始下载
@@ -40,8 +40,8 @@ class MarketService:
           current_date = datetime.date.today().strftime("%Y%m%d")
 
           # check data
-          profile = CompanyProfile.select().where(CompanyProfile.symbol == symbol).first()
-          # profile = database.get(CompanyProfile, symbol) # TODO  ERROR
+          profile = EquityProfile.select().where(EquityProfile.symbol == symbol).first()
+          # profile = database.get(EquityProfile, symbol) # TODO  ERROR
           if profile and profile.update_date and profile.update_date >= current_date:
               return
 
@@ -82,12 +82,12 @@ class MarketService:
       start_time = time.time()
 
       # database.find(row, fields=['credit_multiplier'])
-      # profiles = CompanyProfile.select().where(CompanyProfile.update_date == None).order_by(CompanyProfile.update_date.asc())
+      # profiles = EquityProfile.select().where(EquityProfile.update_date == None).order_by(EquityProfile.update_date.asc())
 
       # 查询随机 200 条记录
-      # profiles = CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc(), CompanyProfile.symbol.desc()).limit(200)
-      # profiles = CompanyProfile.select().order_by(CompanyProfile.update_date.asc(), peewee.fn.random()).limit(200)
-      profiles = database.get_random(CompanyProfile, 200)
+      # profiles = EquityProfile.select(EquityProfile.symbol, EquityProfile.name).order_by(EquityProfile.update_date.asc(), EquityProfile.symbol.desc()).limit(200)
+      # profiles = EquityProfile.select().order_by(EquityProfile.update_date.asc(), peewee.fn.random()).limit(200)
+      profiles = database.get_random(EquityProfile, 200)
 
       # 遍历查询结果
       for profile in profiles:
@@ -111,10 +111,10 @@ class MarketService:
       start_time = time.time()
 
       # database.find(row, fields=['credit_multiplier'])
-      # profiles = CompanyProfile.select().where(CompanyProfile.update_date == None).order_by(CompanyProfile.update_date.asc())
+      # profiles = EquityProfile.select().where(EquityProfile.update_date == None).order_by(EquityProfile.update_date.asc())
 
       # 查询前 200 条记录
-      profiles = [item for item in CompanyProfile.select(CompanyProfile.symbol, CompanyProfile.name).order_by(CompanyProfile.update_date.asc()).limit(200)]
+      profiles = [item for item in EquityProfile.select(EquityProfile.symbol, EquityProfile.name).order_by(EquityProfile.update_date.asc()).limit(200)]
 
       # 遍历查询结果
       for profile in profiles:

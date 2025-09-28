@@ -6,26 +6,59 @@ from peewee import SqliteDatabase, Model, CharField, IntegerField, DateField, Bo
   PrimaryKeyField, DecimalField
 from decimal import Decimal
 
-from src.config.env import db
+from config.env import db
 
 # db = SqliteDatabase('E:/Documents/market.db')
 # db.connect()
 # db.create_tables([CompanyOverview, IncomeStatement])
 
 
-class CompanyProfile(Model):
+class EquityProfile(Model):
   class Meta:
     case_sensitive = False
     database = db  # this model uses the people database
-    table_name = 'company_profile'
+    table_name = 'equity_statistics'
     primary_key = CompositeKey('symbol')
 
   symbol                   = CharField()  # コード
-  spotlight                = CharField()  # 注目度
-  name                     = CharField()  # 企業名
-  sector                   = CharField()  # 業種 東証業種名
-  industry                 = CharField()  # 業界 日経業種分類
-  exchange                 = CharField()  # 上場市場
+  name                     = CharField()  # 銘柄名
+  exchange                 = CharField()  # 市場区分
+  established_date         = CharField()  # 設立日
+  listing_date             = CharField()  # 上場日
+  sector                   = CharField()  # 東証業種名 業種
+  industry                 = CharField()  # 日経業種分類 業界
+  dividend_yield           = DecimalField()  # 配当利回り
+  ex_dividend_date         = CharField()  # 除息日
+  year_change_ratio        = DecimalField(max_digits=10, decimal_places=2)  # 年初来株価上昇率
+  present_price            = DecimalField()  # 現在株価
+  book_value_per_share     = DecimalField()  # 1株純資産
+  year_low                 = DecimalField()  # 年初来安値
+  year_high                = DecimalField()  # 年初来高値
+  moving_average           = DecimalField()  # 200日移動平均線
+  volume                   = CharField()  # 出来高
+  per                      = DecimalField()  # 株価収益率
+  pbr                      = DecimalField()  # 株価純資産倍率
+  ev_revenue               = DecimalField()  # 企业价值/收入
+  ev_ebitda                = DecimalField()  # 企业价值/息税前利润
+  eps                      = DecimalField()  # 基本1株当たり利益
+  roa                      = DecimalField()  # 総資産利益率
+  roe                      = DecimalField()  # 株主資本利益率
+  debt_equity_ratio        = DecimalField()  # 债务权益比率
+  own_capital_ratio        = DecimalField()  # 自己資本比率
+  market_cap               = DecimalField()  # 時価総額
+  enterprise_value         = DecimalField()  # 企業価値
+  credit_multiplier        = DecimalField()  # 信用倍率
+  grade_rating             = DecimalField()  # レーティング
+  index_adoption           = CharField()  # 指数採用
+  per_unit                 = CharField()  # 単元株数
+  issued_shares            = CharField()  # 発行済株数
+  business_scope           = CharField()  # 事業内容
+  product_range            = CharField()  # 取扱い商品
+  representative           = CharField()  # 代表者
+  capital_stock            = CharField()  # 資本金
+  address                  = CharField()  # 本社住所
+  tel                      = CharField()  # 電話番号
+  url                      = CharField()  # URL
   amount_of_sales          = CharField()  # 売上高
   net_income               = CharField()  # 当期純利益
   sales_cf                 = CharField()  # 営業C/F
@@ -33,36 +66,9 @@ class CompanyProfile(Model):
   cash_and_deposits        = CharField()  # 現預金等
   total_capital            = CharField()  # 資本合計
   average_annual_income    = CharField()  # 平均年収
-  established_date         = CharField()  # 設立年月日
-  index_adoption           = CharField()  # 指数採用
-  url                      = CharField()  # URL
-  representative           = CharField()  # 代表者
-  listing_date             = CharField()  # 上場年月日
-  per_unit                 = CharField()  # 単元株数
-  capital_stock            = CharField()  # 資本金
-  address                  = CharField()  # 本社住所
-  tel                      = CharField()  # 電話番号
-  dividend_yield           = CharField()  # 配当利回り
-  per                      = CharField()  # PE Ratio (TTM)
-  pbr                      = CharField()  # 市净率
-  eps                      = CharField()  # 每股收益  (TTM)
-  roa                      = CharField()  # ROA
-  roe                      = CharField()  # ROE股东权益回报率
-  debt_equity_ratio        = CharField()  # 债务权益比率
-  own_capital_ratio        = CharField()  # 自己資本比率
-  market_cap               = CharField()  # 時価総額(百万円)
-  enterprise_value         = CharField()  # 企業価値
-  book_value_per_share     = CharField()  # 1株純資産
-  year_high                = CharField()  # 年高値
-  year_low                 = CharField()  # 年安値
-  year_change_ratio        = DecimalField(max_digits=10, decimal_places=2)  # 年初来株価上昇率
-  moving_average_deviation = CharField()  # 200日移動平均乖離率
-  grade_rating             = CharField()  # レーティング 「评级」「等级」
-  credit_multiplier        = CharField()  # 信用倍率(倍)
-  ex_dividend_date         = CharField()  # 除息日
-  business_scope           = CharField()  # 事業内容
-  product_range            = CharField()  # 取扱い商品
+  delisting_date           = CharField()  # 上場廃止日
   update_date              = CharField()  # 更新日
+
 
   # 在数据保存前执行的操作
   def save(self, *args, **kwargs):

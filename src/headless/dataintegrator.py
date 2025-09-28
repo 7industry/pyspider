@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
-from src.api import database
+from api import database
 
 
 class DataIntegrator(ABC):
@@ -43,12 +43,12 @@ class DataIntegrator(ABC):
 
 
   @abstractmethod
-  def get_company_profile(self) -> ClassVar['DataIntegrator']:
+  def get_equity_statistics(self) -> ClassVar['DataIntegrator']:
       pass
 
 
   def update(self) :
-    row = self.get_company_profile()
+    row = self.get_equity_statistics()
     if self.__record is None:
       for key in row.__data__:
         if getattr(row, key) in ("N/A", "--", "---", "---倍"):
@@ -69,8 +69,8 @@ class DataIntegrator(ABC):
     database.save(self.__record)
 
 if __name__ == '__main__':
-  from src.headless.kabumap import Kabumap
-  from src.headless.kabuyoho import Kabuyoho
+  from headless.kabumap import Kabumap
+  from headless.kabuyoho import Kabuyoho
 
   # Create an instance of the Dog class
   baseData: 'DataIntegrator' = Kabuyoho(symbol="7203")

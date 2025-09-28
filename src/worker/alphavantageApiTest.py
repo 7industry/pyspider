@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from src.model.FundamentalData import CompanyOverview
-from src.api import database
-from src.api import alphavantage
+from model.SchemaModel import CompanyOverview
+from api import database
+from api import alphavantage
 
 # reloadium.start()
 
@@ -17,7 +17,7 @@ from src.api import alphavantage
 data = alphavantage.listing_status()
 
 
-# FundamentalData.update(data)
+# SchemaModel.update(data)
 
 # 使用 CompanyOverview 类名
 # database.delete(CompanyOverview, data)

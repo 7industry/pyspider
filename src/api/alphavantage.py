@@ -6,8 +6,8 @@ import traceback
 import csv
 
 
-from src.api import database
-from src.model.FundamentalData import CompanyOverview, IncomeStatement, BalanceSheet, CashFlow, Earnings, ListingStatus
+from api import database
+from model.SchemaModel import CompanyOverview, IncomeStatement, BalanceSheet, CashFlow, Earnings, ListingStatus
 
 # https://www.alphavantage.co/support/#api-key
 apikey = "RSNV5C041ETQCGWI"
