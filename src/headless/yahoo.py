@@ -91,7 +91,7 @@ class Yahoo(DataIntegrator):
               key = mapping[key]
               setattr(row, key, value)
 
-      database.update(row, fields=['market_cap', 'enterprise_value', 'ex_dividend_date', 'year_low', 'year_high', 'year_change_ratio', 'pbr', 'per', 'roa', 'roe', 'eps', 'dividend_yield', 'book_value_per_share', 'debt_equity_ratio', 'update_date'])
+      database.update(row, fields=cls._fields)
 
     browser.close()
 
@@ -120,25 +120,26 @@ class Yahoo(DataIntegrator):
     browser.open(url.format(symbol=row.symbol), timeout=timeout)
     browser.close()
 
-    for element in browser.page.select('div:is(.table-container, .container) table tr'):
-      elements = element.select('td')
-      # elements = element.select('td:not(sup)')
-      # td_text = element.select('td:not(sup)').get_text()
-      if(elements):
-        key, value = elements[0].contents[0].strip(), elements[1].text.strip()
-        # 剔除掉 () 之间的内容
-        key = re.sub(r"\(.*?\)", "", key).strip()
+    if browser.page:
+      for element in browser.page.select('div:is(.table-container, .container) table tr'):
+        elements = element.select('td')
+        # elements = element.select('td:not(sup)')
+        # td_text = element.select('td:not(sup)').get_text()
+        if elements:
+          key, value = elements[0].contents[0].strip(), elements[1].text.strip()
+          # 剔除掉 () 之间的内容
+          key = re.sub(r"\(.*?\)", "", key).strip()
 
-        if (value != '--'):
-          if (key == 'Ex-Dividend Date'):
-            # 将日期字符串转换为 datetime 对象
-            date = datetime.strptime(value, "%m/%d/%Y")
-            # 将 datetime 对象转换为 yyyymmdd 格式
-            value = date.strftime("%Y%m%d")
+          if (value != '--'):
+            if (key == 'Ex-Dividend Date'):
+              # 将日期字符串转换为 datetime 对象
+              date = datetime.strptime(value, "%m/%d/%Y")
+              # 将 datetime 对象转换为 yyyymmdd 格式
+              value = date.strftime("%Y%m%d")
 
-          if key in self.mapping.keys():
-            key = self.mapping[key]
-            setattr(row, key, value)
+            if key in self.mapping.keys():
+              key = self.mapping[key]
+              setattr(row, key, value)
 
     # 计算耗时
     end_time = time.time()

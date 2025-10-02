@@ -13,7 +13,7 @@ from api import database
 
 class Kabuyoho(DataIntegrator):
 
-  _fields = ['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range', 'dividend_yield']
+  _fields = ['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range']
 
   __mapping = {
     '時価総額': 'market_cap',
@@ -22,7 +22,7 @@ class Kabuyoho(DataIntegrator):
     'PBR(実)': 'pbr',
     'ROA(実)': 'roa',
     'ROE(実)': 'roe',
-    '配当利回り(予)': 'dividend_yield',
+    # '配当利回り(予)': 'dividend_yield',
     '自己資本比率': 'own_capital_ratio',
     '事業内容': 'business_scope',
     '取扱い商品': 'product_range',
@@ -33,19 +33,6 @@ class Kabuyoho(DataIntegrator):
     # 使用 time() 函数
     start_time = time.time()
     browser = StatefulBrowser(user_agent=useragents[random.randint(0, len(useragents) - 1)])
-
-    mapping = {
-      '時価総額': 'market_cap',
-      'レーティング': 'grade_rating',
-      'PER(予)': 'per',
-      'PBR(実)': 'pbr',
-      'ROA(実)': 'roa',
-      'ROE(実)': 'roe',
-      '配当利回り(予)': 'dividend_yield',
-      '自己資本比率': 'own_capital_ratio',
-      '事業内容': 'business_scope',
-      '取扱い商品': 'product_range',
-    }
 
     # 企業情報
     # https://kabuyoho.jp/reportTop?bcode=5020
@@ -65,8 +52,8 @@ class Kabuyoho(DataIntegrator):
         values = re.findall(r"(\S+.*?)\n+", values)
 
         key, value = keys[0], values[0]
-        if key in mapping.keys():
-          key = mapping[key]
+        if key in cls.__mapping.keys():
+          key = cls.__mapping[key]
           setattr(row, key, value)
 
       # elements = [element.text for element in browser.page.select('section[class="info_box info_box_contents"]')]
@@ -76,14 +63,14 @@ class Kabuyoho(DataIntegrator):
         # 事業内容
         business_titel = elements[0].select('h2')[0].text.strip()
         business_scope = "\n".join(p.text.strip() for p in elements[0].select("section > p"))
-        setattr(row,  mapping[business_titel], business_scope)
+        setattr(row,  cls.__mapping[business_titel], business_scope)
 
         # 取扱い商品
         product_titel = elements[1].select('h2')[0].text.strip()
         product_range = "\n".join(p.text.strip() for p in elements[1].select("section > p"))
-        setattr(row, mapping[product_titel], product_range)
+        setattr(row, cls.__mapping[product_titel], product_range)
 
-        database.update(row, fields=['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range', 'dividend_yield'])
+        database.update(row, fields=cls._fields)
       else:
         print('ウェブサイト「株予報プロ」に、銘柄「{symbol}」は登録されていません'.format(symbol=row.symbol))
 
@@ -115,37 +102,38 @@ class Kabuyoho(DataIntegrator):
     browser.open(url.format(symbol=row.symbol), timeout=timeout)
     browser.close()
 
-    # 株式状況
-    elements = [element.text for element in browser.page.select('div[class="smary_box"] dl > :is(dt,dd)')]
+    if browser.page:
+      # 株式状況
+      elements = [element.text for element in browser.page.select('div[class="smary_box"] dl > :is(dt,dd)')]
 
-    for i in range(0, len(elements), 2):
-      keys, values = elements[i], elements[i + 1]
-      keys = re.findall(r"(\S+.*?)\n+", keys)
-      values = re.findall(r"(\S+.*?)\n+", values)
+      for i in range(0, len(elements), 2):
+        keys, values = elements[i], elements[i + 1]
+        keys = re.findall(r"(\S+.*?)\n+", keys)
+        values = re.findall(r"(\S+.*?)\n+", values)
 
-      key, value = keys[0], values[0]
-      if key in self.__mapping.keys():
-        key = self.__mapping[key]
-        setattr(row, key, value)
+        key, value = keys[0], values[0]
+        if key in self.__mapping.keys():
+          key = self.__mapping[key]
+          setattr(row, key, value)
 
-    # elements = [element.text for element in browser.page.select('section[class="info_box info_box_contents"]')]
-    elements = browser.page.select('section[class="info_box info_box_contents"], section[class="info_box info_box_product"]')
+      # elements = [element.text for element in browser.page.select('section[class="info_box info_box_contents"]')]
+      elements = browser.page.select('section[class="info_box info_box_contents"], section[class="info_box info_box_product"]')
 
-    if len(elements) > 0:
-      # 事業内容
-      business_titel = elements[0].select('h2')[0].text.strip()
-      business_scope = "\n".join(p.text.strip() for p in elements[0].select("section > p"))
-      if self.__mapping[business_titel]:
-        setattr(row, self.__mapping[business_titel], business_scope)
+      if len(elements) > 0:
+        # 事業内容
+        business_titel = elements[0].select('h2')[0].text.strip()
+        business_scope = "\n".join(p.text.strip() for p in elements[0].select("section > p"))
+        if self.__mapping[business_titel]:
+          setattr(row, self.__mapping[business_titel], business_scope)
 
-      # 取扱い商品
-      product_titel = elements[1].select('h2')[0].text.strip()
-      product_range = "\n".join(p.text.strip() for p in elements[1].select("section > p"))
-      if self.__mapping[product_titel]:
-        setattr(row, self.__mapping[product_titel], product_range)
+        # 取扱い商品
+        product_titel = elements[1].select('h2')[0].text.strip()
+        product_range = "\n".join(p.text.strip() for p in elements[1].select("section > p"))
+        if self.__mapping[product_titel]:
+          setattr(row, self.__mapping[product_titel], product_range)
 
-    else:
-      print('ウェブサイト「株予報プロ」に、銘柄「{symbol}」は登録されていません'.format(symbol=row.symbol))
+      else:
+        print('ウェブサイト「株予報プロ」に、銘柄「{symbol}」は登録されていません'.format(symbol=row.symbol))
 
 
     # 计算耗时
@@ -154,5 +142,4 @@ class Kabuyoho(DataIntegrator):
 
     print("耗时:", elapsed_time, "秒")
 
-    # database.update(row, fields=['market_cap', 'grade_rating', 'own_capital_ratio', 'business_scope', 'product_range', 'dividend_yield'])
     return row

@@ -60,7 +60,7 @@ class Minkabu(DataIntegrator):
             key = mapping[key]
             setattr(row, key, value)
 
-      database.update(row, fields=['listing_date', 'tel'])
+      database.update(row, fields=cls._fields)
 
     browser.close()
 
@@ -88,17 +88,18 @@ class Minkabu(DataIntegrator):
     browser.open(url.format(symbol=row.symbol), timeout=timeout)
     browser.close()
 
-    # 株式（上場市場）の状況
-    stock_listed_market_status = [element.text for element in browser.page.select('div[class="ly_content_wrapper"] dl[class="md_dataList"]')]
+    if browser.page:
+      # 株式（上場市場）の状況
+      stock_listed_market_status = [element.text for element in browser.page.select('div[class="ly_content_wrapper"] dl[class="md_dataList"]')]
 
-    # 遍历所有元素并获取文本内容
-    for element in stock_listed_market_status:
-      matches = re.findall(r"(\S+.*?)\n+", element)
-      for i in range(0, len(matches), 2):
-        key, value = matches[i], matches[i + 1]
-        if key in self.__mapping.keys():
-          key = self.__mapping[key]
-          setattr(row, key, value)
+      # 遍历所有元素并获取文本内容
+      for element in stock_listed_market_status:
+        matches = re.findall(r"(\S+.*?)\n+", element)
+        for i in range(0, len(matches), 2):
+          key, value = matches[i], matches[i + 1]
+          if key in self.__mapping.keys():
+            key = self.__mapping[key]
+            setattr(row, key, value)
 
 
     # 计算耗时

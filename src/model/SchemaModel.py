@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 
-from peewee import SqliteDatabase, Model, CharField, IntegerField, DateField, BooleanField, CompositeKey, \
-  PrimaryKeyField, DecimalField
+from peewee import SqliteDatabase, Model, CharField, IntegerField, DateField, BooleanField, CompositeKey, PrimaryKeyField, DecimalField
 from decimal import Decimal
 
 from config.env import db
@@ -35,7 +34,7 @@ class EquityProfile(Model):
   year_low                 = DecimalField()  # 年初来安値
   year_high                = DecimalField()  # 年初来高値
   moving_average           = DecimalField()  # 200日移動平均線
-  volume                   = CharField()  # 出来高
+  volume                   = IntegerField()  # 出来高
   per                      = DecimalField()  # 株価収益率
   pbr                      = DecimalField()  # 株価純資産倍率
   ev_revenue               = DecimalField()  # 企业价值/收入
@@ -72,19 +71,17 @@ class EquityProfile(Model):
 
   # 在数据保存前执行的操作
   def save(self, *args, **kwargs):
+    # 验证数据
+    if not self.symbol:
+      raise ValueError("コード不能为空")
     # 替换 N/A 为空
     for field in self.__data__:
       if getattr(self, field) in ("N/A", "--", "---", "---倍"):
         setattr(self, field, None)
-    # 将日期转换为字符串
-    self.update_date = date.today().strftime('%Y%m%d')
     # 将 value 转换为 Decimal 类型
     if self.year_change_ratio:
       self.year_change_ratio = self.year_change_ratio.replace(',', '').strip("%")
       self.year_change_ratio = Decimal(self.year_change_ratio) if len(self.year_change_ratio) > 0 else None
-    # # 验证数据
-    # if not self.name:
-    #   raise ValueError("名称不能为空")
     super().save(*args, **kwargs)
 
 

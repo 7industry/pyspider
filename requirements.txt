@@ -3,8 +3,10 @@ PyInquirer==1.0.3
 datetime
 feedparser
 pandas
-requests
+requests~=2.31.0
 requests_html
 MechanicalSoup~=1.3.0
 tqdm~=4.66.2
-peewee~=3.17.1
+peewee~=3.18.2
+pytz~=2025.2
+beautifulsoup4~=4.14.0

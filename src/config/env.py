@@ -29,11 +29,19 @@ headers = {
 # 配置超時時間(秒)
 timeout = 15
 
+# 每次运行处理的条目数
+items_per_run = 200
+
+# 每次执行之间的延迟
+delay_between_runs = 600  # 单位：秒
+
+
 from peewee import SqliteDatabase
 
 # Define db as a placeholder
 # db = None
-db = SqliteDatabase('C:/Users/kindustry/Documents/market.db')
+# db = SqliteDatabase('C:/Users/kindustry/Documents/market.db')
+db = SqliteDatabase('/opt/pyspider/data/market.db')
 
 
 # Dynamically change the database connection

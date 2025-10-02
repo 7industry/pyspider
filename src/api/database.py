@@ -15,7 +15,7 @@ def save(modle):
     db.connect(True)
     modle.save(force_insert=True)
   except:
-    # traceback.print_exc()
+    traceback.print_exc()
     raise UserWarning("database insert failed!")
   else:
     return True
@@ -35,7 +35,7 @@ def insert_many(*entities):
       db.commit()
   except:
     db.rollback()
-    # traceback.print_exc()
+    traceback.print_exc()
     raise UserWarning("database insert failed!")
   else:
     return True

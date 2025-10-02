@@ -65,7 +65,7 @@ class Nikkei(DataIntegrator):
           key = mapping[key]
           setattr(row, key, value)
 
-      database.update(row, fields=['established_date', 'sector', 'industry', 'index_adoption', 'url', 'representative', 'per_unit', 'address', 'capital_stock'])
+      database.update(row, fields=cls._fields)
 
     browser.close()
 
@@ -95,15 +95,15 @@ class Nikkei(DataIntegrator):
     browser.open(url.format(symbol=row.symbol), timeout=timeout)
     browser.close()
 
+    if browser.page:
+      for tr in browser.page.select('div[class="m-articleFrame_body"] table tr')[:22]:
+        matches = re.findall(r"(\S+.*?)\n+", tr.text)
+        key = matches[0]
+        value = matches[1]
 
-    for tr in browser.page.select('div[class="m-articleFrame_body"] table tr')[:22]:
-      matches = re.findall(r"(\S+.*?)\n+", tr.text)
-      key = matches[0]
-      value = matches[1]
-
-      if key in self.__mapping.keys():
-        key = self.__mapping[key]
-        setattr(row, key, value)
+        if key in self.__mapping.keys():
+          key = self.__mapping[key]
+          setattr(row, key, value)
 
 
     # 计算耗时
@@ -112,6 +112,5 @@ class Nikkei(DataIntegrator):
 
     print("耗时:", elapsed_time, "秒")
 
-    # database.update(row, fields=['established_date', 'sector', 'industry', 'index_adoption', 'url', 'representative', 'per_unit', 'address', 'capital_stock'])
     return row
 
